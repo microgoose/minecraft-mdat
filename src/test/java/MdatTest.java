@@ -30,6 +30,6 @@ public class MdatTest {
     }
 
     public static void main(String[] args) throws IOException {
-       testSuccessfulConversion();
+        testSuccessfulConversion();
     }
 }

@@ -1,8 +1,6 @@
 package net.minecraft.map.data.mdat.model;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,22 +11,22 @@ public class MapRegion {
         chunks.put(index, chunk);
     }
 
-    public void serialize(DataOutputStream dataStream) throws IOException {
-        dataStream.writeShort(chunks.size());
+    public void serialize(ByteBuffer buffer) {
+        buffer.putShort((short) chunks.size());
 
         for (Map.Entry<Short, MapChunk> entry : chunks.entrySet()) {
-            dataStream.writeShort(entry.getKey());
-            entry.getValue().serialize(dataStream);
+            buffer.putShort(entry.getKey());
+            entry.getValue().serialize(buffer);
         }
     }
 
-    public static MapRegion deserialize(DataInputStream dataStream) throws IOException {
+    public static MapRegion deserialize(ByteBuffer buffer) {
         MapRegion region = new MapRegion();
-        int chunkCount = dataStream.readShort();
+        int chunkCount = buffer.getShort();
 
         for (int i = 0; i < chunkCount; i++) {
-            short index = dataStream.readShort();
-            MapChunk chunk = MapChunk.deserialize(dataStream);
+            short index = buffer.getShort();
+            MapChunk chunk = MapChunk.deserialize(buffer);
             region.setChunk(index, chunk);
         }
 

@@ -1,10 +1,10 @@
 package net.minecraft.map.data.mca.reader;
 
 import net.minecraft.map.data.mca.config.SectionConfig;
+import net.minecraft.map.data.mca.model.MCASection;
 import net.minecraft.map.data.nbt.NBTNavigator;
 import net.minecraft.map.data.nbt.NBTReader;
 import net.minecraft.map.data.nbt.NBTSkipper;
-import net.minecraft.map.data.mca.model.MCASection;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

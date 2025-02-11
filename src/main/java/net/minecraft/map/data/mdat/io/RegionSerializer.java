@@ -3,31 +3,28 @@ package net.minecraft.map.data.mdat.io;
 import net.minecraft.map.data.mdat.model.MapRegion;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class RegionSerializer {
 
     public static void saveToFile(MapRegion region, Path path) throws IOException {
-        File file = path.toFile();
-
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-        }
-
-        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
-            region.serialize(out);
-        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024); // 1 MB
+        buffer.order(ByteOrder.BIG_ENDIAN);
+        region.serialize(buffer);
+        buffer.flip();
+        byteArrayOutputStream.write(buffer.array(), buffer.position(), buffer.remaining());
+        Files.write(path, byteArrayOutputStream.toByteArray());
     }
 
     public static MapRegion loadFromFile(Path path) throws IOException {
-        File file = path.toFile();
-
-        if (!file.exists()) {
-            throw new FileNotFoundException("File doesn't exist: " + file.getPath());
-        }
-
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-            return MapRegion.deserialize(in);
-        }
+        byte[] data = Files.readAllBytes(path);
+        ByteBuffer regionBuffer = ByteBuffer.wrap(data);
+        regionBuffer.order(ByteOrder.BIG_ENDIAN);
+        return MapRegion.deserialize(regionBuffer);
     }
 }
+

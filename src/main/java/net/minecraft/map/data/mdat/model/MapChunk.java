@@ -2,9 +2,9 @@ package net.minecraft.map.data.mdat.model;
 
 import net.minecraft.map.data.config.ChunkConfig;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,50 +38,50 @@ public class MapChunk {
         return chunkBlockY * ChunkConfig.BLOCKS_SIDE + chunkBlockX;
     }
 
-    public void serialize(DataOutputStream dataStream) throws IOException {
-        dataStream.writeByte(blockTypesPalette.size());
+    public void serialize(ByteBuffer buffer) {
+        buffer.put((byte) blockTypesPalette.size());
         for (String blockType : blockTypesPalette) {
             byte[] strBytes = blockType.getBytes(StandardCharsets.UTF_8);
-            dataStream.writeByte(strBytes.length);
-            dataStream.write(strBytes);
+            buffer.putShort((short) strBytes.length);
+            buffer.put(strBytes);
         }
 
-        dataStream.writeByte(heightsPalette.size());
+        buffer.put((byte) heightsPalette.size());
         for (short height : heightsPalette) {
-            dataStream.writeShort(height);
+            buffer.putShort(height);
         }
 
-        for (short blockTypeIndex : blockTypes) {
-            dataStream.writeByte(blockTypeIndex);
+        for (byte blockTypeIndex : blockTypes) {
+            buffer.put(blockTypeIndex);
         }
 
-        for (short heightIndex : heights) {
-            dataStream.writeByte(heightIndex);
+        for (byte heightIndex : heights) {
+            buffer.put(heightIndex);
         }
     }
 
-    public static MapChunk deserialize(DataInputStream in) throws IOException {
+    public static MapChunk deserialize(ByteBuffer buffer) {
         MapChunk chunk = new MapChunk();
 
-        int blockTypesSize = in.readByte();
+        int blockTypesSize = buffer.get();
         for (int i = 0; i < blockTypesSize; i++) {
-            int strLength = in.readByte();
+            short strLength = buffer.getShort();
             byte[] strBytes = new byte[strLength];
-            in.readFully(strBytes);
+            buffer.get(strBytes);
             chunk.blockTypesPalette.add(new String(strBytes, StandardCharsets.UTF_8));
         }
 
-        int heightsSize = in.readByte();
+        byte heightsSize = buffer.get();
         for (int i = 0; i < heightsSize; i++) {
-            chunk.heightsPalette.add(in.readShort());
+            chunk.heightsPalette.add(buffer.getShort());
         }
 
         for (int i = 0; i < ChunkConfig.BLOCKS_COUNT; i++) {
-            chunk.blockTypes[i] = in.readByte();
+            chunk.blockTypes[i] = buffer.get();
         }
 
         for (int i = 0; i < ChunkConfig.BLOCKS_COUNT; i++) {
-            chunk.heights[i] = in.readByte();
+            chunk.heights[i] = buffer.get();
         }
 
         return chunk;
