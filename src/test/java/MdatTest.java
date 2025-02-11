@@ -9,27 +9,41 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.nio.file.*;
+
 public class MdatTest {
+
     public static Path inputPath = Path.of("src/test/resources/r.0.0.mca");
+    public static Path inputDirectory = Path.of("C:/Users/mikhail/AppData/Roaming/.minecraft/saves/test/region");
     public static Path outputPath = Path.of("src/test/resources/");
 
-    public static void testSuccessfulConversion() throws IOException {
+    public static void testSuccessfulConversion(Path inputPath) throws IOException {
         byte[] data = Files.readAllBytes(inputPath);
         ByteBuffer regionBuffer = ByteBuffer.wrap(data);
         regionBuffer.order(ByteOrder.BIG_ENDIAN);
 
         MapRegion region = MapRegionService.getFromMcaBuffer(regionBuffer);
 
-        String mdatRegionFileName = MdatService.getFileNameByMcaFileName(inputPath.toFile().getName());
+        String mdatRegionFileName = MdatService.getFileNameByMcaFileName(inputPath.getFileName().toString());
         Path outputFilePath = outputPath.resolve(mdatRegionFileName);
 
         RegionSerializer.saveToFile(region, outputFilePath);
         MapRegion loadedRegion = RegionSerializer.loadFromFile(outputFilePath);
 
-        Files.delete(outputFilePath);
+//        Files.delete(outputFilePath);
+    }
+
+    public static void testSuccessfulWorldConversion(Path directory) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, "*.mca")) {
+            for (Path file : stream) {
+                System.out.println("File in work: " + file);
+                testSuccessfulConversion(file);
+            }
+        }
     }
 
     public static void main(String[] args) throws IOException {
-        testSuccessfulConversion();
+        testSuccessfulConversion(inputPath);
+        testSuccessfulWorldConversion(inputDirectory);
     }
 }
