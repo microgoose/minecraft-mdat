@@ -21,18 +21,18 @@ public class MCAConverter {
     public static void processSections(int chunkXIndex, int chunkYIndex, MapChunk mapChunk, MCASection[] sections) {
         for (int i = 0; i < sections.length; i++) {
             MCASection section = sections[i];
-            short startHeight = (short) (section.y * ChunkConfig.BLOCKS_SIDE);
-            short endHeight = (short) (startHeight - ChunkConfig.BLOCKS_SIDE);
+            short lowestHeight = (short) (section.y * ChunkConfig.BLOCKS_SIDE);
+            short highestHeight = (short) (lowestHeight + ChunkConfig.BLOCKS_SIDE);
 
             if (section.palette.size() == 1) {
                 if (isTransparent(section.palette.getFirst()))
                     continue;
 
-                mapChunk.setBlockData(chunkXIndex, chunkYIndex, startHeight, section.palette.getFirst());
+                mapChunk.setBlockData(chunkXIndex, chunkYIndex, highestHeight, section.palette.getFirst());
                 return;
             }
 
-            for (short height = startHeight; height > endHeight; height--) {
+            for (short height = highestHeight; height > lowestHeight; height--) {
                 String blockType = section.getBlockType(chunkXIndex, chunkYIndex, height);
 
                 if (isTransparent(blockType)) continue;
@@ -44,6 +44,6 @@ public class MCAConverter {
     }
 
     private static boolean isTransparent(String blockType) {
-        return blockType.endsWith("air");
+        return blockType.equals("minecraft:air");
     }
 }
