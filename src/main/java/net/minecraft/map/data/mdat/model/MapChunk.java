@@ -16,16 +16,16 @@ public class MapChunk {
     public void setBlockData(int chunkBlockX, int chunkBlockY, short height, String blockType) {
         int index = getIndex(chunkBlockX, chunkBlockY);
 
-        int btpIndex = heightsPalette.indexOf(height);
+        int btpIndex = blockTypesPalette.indexOf(blockType);
         if (btpIndex == -1) {
-            heightsPalette.add(height);
-            btpIndex = heightsPalette.size() - 1;
+            blockTypesPalette.add(blockType);
+            btpIndex = blockTypesPalette.size() - 1;
         }
 
-        int hpIndex = blockTypesPalette.indexOf(blockType);
+        int hpIndex = heightsPalette.indexOf(height);
         if (hpIndex == -1) {
-            blockTypesPalette.add(blockType);
-            hpIndex = blockTypesPalette.size() - 1;
+            heightsPalette.add(height);
+            hpIndex = heightsPalette.size() - 1;
         }
 
         blockTypes[index] = (byte) btpIndex;
