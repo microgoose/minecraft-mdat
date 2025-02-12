@@ -26,7 +26,7 @@ public class MCAConverter {
 
             if (section.palette.size() == 1) {
                 if (isTransparent(section.palette.getFirst()))
-                    return;
+                    continue;
 
                 mapChunk.setBlockData(chunkXIndex, chunkYIndex, startHeight, section.palette.getFirst());
                 return;

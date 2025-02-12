@@ -82,7 +82,7 @@ public class MCAChunkReader {
         }
 
         MCASection[] sectionSortedArray = new MCASection[sectionsCount];
-        for (byte i = maxY, j = 0; i > minY; i--) {
+        for (byte i = maxY, j = 0; i > minY - 1; i--) {
             int index = i & 0xFF;
             if (sectionArray[index] == null)
                 continue;
