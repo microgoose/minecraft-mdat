@@ -8,16 +8,13 @@ import net.minecraft.map.data.nbt.NBTSkipper;
 
 import java.nio.ByteBuffer;
 
-import static net.minecraft.map.data.mca.config.SectionConfig.CHUNK_SECTION_COUNT;
-import static net.minecraft.map.data.mca.config.SectionConfig.SECTION_MIN_Y;
-
 public class MCAChunkReader {
-    private final MCASectionReader MCASectionReader;
-    private final net.minecraft.map.data.mca.stream.MCAChunkStream MCAChunkStream;
+    private final MCASectionReader mcaSectionReader;
+    private final MCAChunkStream mcaChunkStream;
 
     public MCAChunkReader(MCASectionReader MCASectionReader, MCAChunkStream MCAChunkStream) {
-        this.MCASectionReader = MCASectionReader;
-        this.MCAChunkStream = MCAChunkStream;
+        this.mcaSectionReader = MCASectionReader;
+        this.mcaChunkStream = MCAChunkStream;
     }
 
     public void readChunk(ByteBuffer chunkData) {
@@ -58,7 +55,7 @@ public class MCAChunkReader {
         if (chunkMCASections == null)
             throw new IllegalStateException("Chunk sections not initialized");
 
-        MCAChunkStream.handleChunk(new MCAChunk(chunkXPos, chunkZPos, chunkMCASections));
+        mcaChunkStream.handleChunk(new MCAChunk(chunkXPos, chunkZPos, chunkMCASections));
     }
 
     public MCASection[] readSections(ByteBuffer sectionsData) {
@@ -68,12 +65,31 @@ public class MCAChunkReader {
         if (sectionsTagType != 10)
             throw new IllegalStateException("Invalid section tag type: " + sectionsTagType);
 
-        MCASection[] MCASections = new MCASection[CHUNK_SECTION_COUNT];
+        MCASection[] sectionArray = new MCASection[256];
+        byte minY = Byte.MAX_VALUE, maxY = Byte.MIN_VALUE;
+
         for (int i = 0; i < sectionsCount; i++) {
-            MCASection newMCASection = MCASectionReader.readSection(sectionsData);
-            MCASections[(CHUNK_SECTION_COUNT - 1) - (newMCASection.y - SECTION_MIN_Y)] = newMCASection;
+            MCASection newMCASection = mcaSectionReader.readSection(sectionsData);
+
+            if (!newMCASection.palette.isEmpty()) {
+                int index = newMCASection.y & 0xFF;
+
+                sectionArray[index] = newMCASection;
+
+                if (newMCASection.y < minY) minY = newMCASection.y;
+                if (newMCASection.y > maxY) maxY = newMCASection.y;
+            }
         }
 
-        return MCASections;
+        MCASection[] sectionSortedArray = new MCASection[sectionsCount];
+        for (byte i = maxY, j = 0; i > minY; i--) {
+            int index = i & 0xFF;
+            if (sectionArray[index] == null)
+                continue;
+
+            sectionSortedArray[j++] = sectionArray[index];
+        }
+
+        return sectionSortedArray;
     }
 }

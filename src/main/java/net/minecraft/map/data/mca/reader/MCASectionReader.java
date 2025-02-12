@@ -1,6 +1,5 @@
 package net.minecraft.map.data.mca.reader;
 
-import net.minecraft.map.data.mca.config.SectionConfig;
 import net.minecraft.map.data.mca.model.MCASection;
 import net.minecraft.map.data.nbt.NBTNavigator;
 import net.minecraft.map.data.nbt.NBTReader;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public class MCASectionReader {
     public MCASection readSection(ByteBuffer sectionData) {
-        byte sectionY = SectionConfig.SECTION_MIN_Y - 1;
+        byte sectionY = Byte.MIN_VALUE;
         List<String> sectionPalette = new ArrayList<>();
         long[] sectionBlocks = null;
 
@@ -51,11 +50,7 @@ public class MCASectionReader {
             NBTSkipper.skipTag(sectionData, tagType);
         }
 
-        if (sectionY == SectionConfig.SECTION_MIN_Y - 1)
-            throw new IllegalStateException("Section Y not initialized");
-        if (sectionPalette.isEmpty())
-            throw new IllegalStateException("Section Palette not initialized");
-        if (sectionPalette.size() != 1 && sectionBlocks == null)
+        if (sectionPalette.size() > 1 && sectionBlocks == null)
             throw new IllegalStateException("Section Blocks not initialized");
 
         return new MCASection(sectionY, sectionPalette, sectionBlocks);

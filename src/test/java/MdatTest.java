@@ -1,15 +1,14 @@
-import net.minecraft.map.data.mdat.service.MdatService;
 import net.minecraft.map.data.mdat.io.RegionSerializer;
 import net.minecraft.map.data.mdat.model.MapRegion;
 import net.minecraft.map.data.mdat.service.MapRegionService;
+import net.minecraft.map.data.mdat.service.MdatService;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import java.nio.file.*;
 
 public class MdatTest {
 
@@ -30,7 +29,7 @@ public class MdatTest {
         RegionSerializer.saveToFile(region, outputFilePath);
         MapRegion loadedRegion = RegionSerializer.loadFromFile(outputFilePath);
 
-//        Files.delete(outputFilePath);
+        Files.delete(outputFilePath);
     }
 
     public static void testSuccessfulWorldConversion(Path directory) throws IOException {

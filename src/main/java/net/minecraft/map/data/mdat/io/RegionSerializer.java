@@ -2,7 +2,8 @@ package net.minecraft.map.data.mdat.io;
 
 import net.minecraft.map.data.mdat.model.MapRegion;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -12,7 +13,7 @@ public class RegionSerializer {
 
     public static void saveToFile(MapRegion region, Path path) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024); // 1 MB
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024 * 2); // 2 MB
         buffer.order(ByteOrder.BIG_ENDIAN);
         region.serialize(buffer);
         buffer.flip();

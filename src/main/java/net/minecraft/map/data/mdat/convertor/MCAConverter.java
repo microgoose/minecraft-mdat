@@ -5,40 +5,40 @@ import net.minecraft.map.data.mca.model.MCAChunk;
 import net.minecraft.map.data.mca.model.MCASection;
 import net.minecraft.map.data.mdat.model.MapChunk;
 
-import java.util.List;
-
 public class MCAConverter {
     public static MapChunk convertChunk(MCAChunk mcaChunk) {
         MapChunk mapChunk = new MapChunk();
-        MCASection[] sections = mcaChunk.sections;
 
-        for (int i = 0; i < sections.length; i++) {
-            MCASection section = sections[i];
-            List<String> palette = section.palette;
-
-            if (palette.size() == 1 && palette.getFirst().equals("minecraft:air"))
-                continue;
-
-            processSection(mapChunk, section);
+        for (int chunkXIndex = 0; chunkXIndex < ChunkConfig.BLOCKS_SIDE; chunkXIndex++) {
+            for (int chunkYIndex = 0; chunkYIndex < ChunkConfig.BLOCKS_SIDE; chunkYIndex++) {
+                processSections(chunkXIndex, chunkYIndex, mapChunk, mcaChunk.sections);
+            }
         }
 
         return mapChunk;
     }
 
-    public static void processSection(MapChunk mapChunk, MCASection section) {
-        short startHeight = (short) (section.y * ChunkConfig.BLOCKS_SIDE);
-        short endHeight = (short) (startHeight - ChunkConfig.BLOCKS_SIDE);
+    public static void processSections(int chunkXIndex, int chunkYIndex, MapChunk mapChunk, MCASection[] sections) {
+        for (int i = 0; i < sections.length; i++) {
+            MCASection section = sections[i];
+            short startHeight = (short) (section.y * ChunkConfig.BLOCKS_SIDE);
+            short endHeight = (short) (startHeight - ChunkConfig.BLOCKS_SIDE);
 
-        for (int chunkXIndex = 0; chunkXIndex < ChunkConfig.BLOCKS_SIDE; chunkXIndex++) {
-            for (int chunkYIndex = 0; chunkYIndex < ChunkConfig.BLOCKS_SIDE; chunkYIndex++) {
-                for (short height = startHeight; height > endHeight; height--) {
-                    String blockType = section.getBlockType(chunkXIndex, chunkYIndex, height);
+            if (section.palette.size() == 1) {
+                if (isTransparent(section.palette.getFirst()))
+                    return;
 
-                    if (isTransparent(blockType)) continue;
+                mapChunk.setBlockData(chunkXIndex, chunkYIndex, startHeight, section.palette.getFirst());
+                return;
+            }
 
-                    mapChunk.setBlockData(chunkXIndex, chunkYIndex, height, blockType);
-                    break;
-                }
+            for (short height = startHeight; height > endHeight; height--) {
+                String blockType = section.getBlockType(chunkXIndex, chunkYIndex, height);
+
+                if (isTransparent(blockType)) continue;
+
+                mapChunk.setBlockData(chunkXIndex, chunkYIndex, height, blockType);
+                return;
             }
         }
     }
