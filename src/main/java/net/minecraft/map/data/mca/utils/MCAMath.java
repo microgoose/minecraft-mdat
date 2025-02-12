@@ -25,16 +25,12 @@
 package net.minecraft.map.data.mca.utils;
 
 public class MCAMath {
-    /**
-     * Having a long array where each long contains as many values as fit in it without overflowing, returning the "valueIndex"-th value when each value has "bitsPerValue" bits.
-     */
     public static long getValueFromLongArray(long[] data, int valueIndex, int bitsPerValue) {
+        if (data == null || bitsPerValue <= 0) return 0;
         int valuesPerLong = 64 / bitsPerValue;
         int longIndex = valueIndex / valuesPerLong;
         int bitIndex = (valueIndex % valuesPerLong) * bitsPerValue;
-
-        long value = data[longIndex] >>> bitIndex;
-
-        return value & (0xFFFFFFFFFFFFFFFFL >>> -bitsPerValue);
+        if (longIndex >= data.length) return 0;
+        return (data[longIndex] >>> bitIndex) & ((1L << bitsPerValue) - 1);
     }
 }
