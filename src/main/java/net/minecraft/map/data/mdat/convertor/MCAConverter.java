@@ -33,7 +33,7 @@ public class MCAConverter {
             }
 
             for (short height = highestHeight; height > lowestHeight; height--) {
-                String blockType = section.getBlockType(chunkXIndex, chunkYIndex, height);
+                String blockType = section.getBlockType(chunkXIndex, height, chunkYIndex);
 
                 if (isTransparent(blockType)) continue;
 
