@@ -1,23 +1,14 @@
-package net.minecraft.world.mca.reader;
+package net.minecraft.world.mca.loader;
 
-import net.minecraft.world.mca.model.MCAChunk;
-import net.minecraft.world.mca.model.MCASection;
-import net.minecraft.world.mca.stream.MCAChunkStream;
 import net.minecraft.world.nbt.NBTReader;
 import net.minecraft.world.nbt.NBTSkipper;
+import net.minecraft.world.mca.model.MCAChunk;
+import net.minecraft.world.mca.model.MCASection;
 
 import java.nio.ByteBuffer;
 
-public class MCAChunkReader {
-    private final MCASectionReader mcaSectionReader;
-    private final MCAChunkStream mcaChunkStream;
-
-    public MCAChunkReader(MCASectionReader MCASectionReader, MCAChunkStream MCAChunkStream) {
-        this.mcaSectionReader = MCASectionReader;
-        this.mcaChunkStream = MCAChunkStream;
-    }
-
-    public void readChunk(ByteBuffer chunkData) {
+public class MCAChunkLoader {
+    public static MCAChunk loadChunk(ByteBuffer chunkData) {
         byte rootTagType = chunkData.get();
         if (rootTagType != 0x0A)
             throw new IllegalStateException("Invalid NBT chunk format: root is not TAG_Compound");
@@ -55,10 +46,10 @@ public class MCAChunkReader {
         if (chunkMCASections == null)
             throw new IllegalStateException("Chunk sections not initialized");
 
-        mcaChunkStream.handleChunk(new MCAChunk(chunkXPos, chunkZPos, chunkMCASections));
+        return new MCAChunk(chunkXPos, chunkZPos, chunkMCASections);
     }
 
-    public MCASection[] readSections(ByteBuffer sectionsData) {
+    private static MCASection[] readSections(ByteBuffer sectionsData) {
         byte sectionsTagType = sectionsData.get();
         int sectionsCount = sectionsData.getInt();
 
@@ -69,9 +60,9 @@ public class MCAChunkReader {
         byte minY = Byte.MAX_VALUE, maxY = Byte.MIN_VALUE;
 
         for (int i = 0; i < sectionsCount; i++) {
-            MCASection newMCASection = mcaSectionReader.readSection(sectionsData);
+            MCASection newMCASection = MCASectionLoader.readSection(sectionsData);
 
-            if (!newMCASection.palette.isEmpty()) {
+            if (newMCASection.palette.length > 0) {
                 int index = newMCASection.y & 0xFF;
 
                 sectionArray[index] = newMCASection;

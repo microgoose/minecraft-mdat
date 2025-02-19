@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.minecraft.world</groupId>
-    <artifactId>minecraft-region-convertor</artifactId>
+    <artifactId>minecraft-world-reader</artifactId>
     <version>0.0.1</version>
 
     <properties>

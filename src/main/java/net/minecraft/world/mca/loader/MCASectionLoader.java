@@ -1,18 +1,16 @@
-package net.minecraft.world.mca.reader;
+package net.minecraft.world.mca.loader;
 
-import net.minecraft.world.mca.model.MCASection;
 import net.minecraft.world.nbt.NBTNavigator;
 import net.minecraft.world.nbt.NBTReader;
 import net.minecraft.world.nbt.NBTSkipper;
+import net.minecraft.world.mca.model.MCASection;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-public class MCASectionReader {
-    public MCASection readSection(ByteBuffer sectionData) {
+public class MCASectionLoader {
+    public static MCASection readSection(ByteBuffer sectionData) {
         byte sectionY = Byte.MIN_VALUE;
-        List<String> sectionPalette = new ArrayList<>();
+        String[] sectionPalette = null;
         long[] sectionBlocks = null;
 
         while (sectionData.hasRemaining()) {
@@ -50,20 +48,20 @@ public class MCASectionReader {
             NBTSkipper.skipTag(sectionData, tagType);
         }
 
-        if (sectionPalette.size() > 1 && sectionBlocks == null)
+        if (sectionPalette != null && sectionPalette.length > 1 && sectionBlocks == null)
             throw new IllegalStateException("Section Blocks not initialized");
 
         return new MCASection(sectionY, sectionPalette, sectionBlocks);
     }
 
-    private List<String> readPalette(ByteBuffer palettePos) {
+    private static String[] readPalette(ByteBuffer palettePos) {
         palettePos.get();
         int paletteCount = palettePos.getInt();
-        List<String> palette = new ArrayList<>();
+        String[] palette = new String[paletteCount];
 
         for (int i = 0; i < paletteCount; i++) {
             NBTNavigator.moveToTag(palettePos, 8, "Name");
-            palette.add(NBTReader.readString(palettePos));
+            palette[i] = NBTReader.readString(palettePos);
             NBTSkipper.skipCompound(palettePos);
         }
 
