@@ -1,9 +1,9 @@
 package net.minecraft.world.mca.model;
 
 public class MCAChunk {
-    public int x;
-    public int z;
-    public MCASection[] sections;
+    public final int x;
+    public final int z;
+    public final MCASection[] sections;
 
     public MCAChunk(int x, int z, MCASection[] sections) {
         this.x = x;

@@ -1,14 +1,14 @@
-package net.minecraft.world.mca.manager;
+package net.minecraft.world.manager;
 
 import net.minecraft.world.mca.model.MCARegion;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class MCARegionCache extends LinkedHashMap<Long, MCARegion> {
+public class RegionCache extends LinkedHashMap<Long, MCARegion> {
     public final int maxRegions;
 
-    public MCARegionCache(int maxRegions) {
+    public RegionCache(int maxRegions) {
         this.maxRegions = maxRegions;
     }
 

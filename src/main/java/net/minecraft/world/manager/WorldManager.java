@@ -1,6 +1,5 @@
-package net.minecraft.world.mca.manager;
+package net.minecraft.world.manager;
 
-import net.minecraft.world.mca.config.MCACacheConfig;
 import net.minecraft.world.mca.loader.MCARegionLoader;
 import net.minecraft.world.mca.model.MCAChunk;
 import net.minecraft.world.mca.model.MCARegion;
@@ -12,18 +11,18 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class MCARegionManager {
+public class WorldManager {
     private final Path worldPath;
-    private final MCARegionCache regionCache;
+    private final RegionCache regionCache;
 
-    public MCARegionManager(Path worldPath) {
+    public WorldManager(Path worldPath) {
         this.worldPath = worldPath;
-        regionCache = new MCARegionCache(MCACacheConfig.MAX_REGIONS);
+        regionCache = new RegionCache(CacheConfig.MAX_REGIONS);
     }
 
-    public MCARegionManager(Path worldPath, MCARegionCache mcaRegionCache) {
+    public WorldManager(Path worldPath, RegionCache regionCache) {
         this.worldPath = worldPath;
-        this.regionCache = mcaRegionCache;
+        this.regionCache = regionCache;
     }
 
     public MCARegion loadRegion(int regionX, int regionZ) throws IOException {
@@ -37,6 +36,7 @@ public class MCARegionManager {
         Path regionPath = getRegionPath(regionX, regionZ);
 
         try (FileChannel channel = FileChannel.open(regionPath, StandardOpenOption.READ)) {
+            //memory trash
             MappedByteBuffer regionBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
             regionBuffer.order(ByteOrder.BIG_ENDIAN);
 
