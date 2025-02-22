@@ -6,11 +6,10 @@ import net.minecraft.world.mca.model.MCABlock;
 import net.minecraft.world.mca.model.MCAChunk;
 import net.minecraft.world.mca.model.MCARegion;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 public class TestWorldLoading {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Path worldPath = Path.of("C:\\Users\\mikhail\\AppData\\Roaming\\.minecraft\\saves\\test");
         WorldManager manager = new WorldManager(worldPath);
         BlockLocator blockLocator = new BlockLocator(manager);

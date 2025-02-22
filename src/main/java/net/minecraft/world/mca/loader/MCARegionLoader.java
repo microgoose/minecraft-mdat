@@ -1,7 +1,7 @@
 package net.minecraft.world.mca.loader;
 
-import net.minecraft.world.mca.model.MCARegion;
 import net.minecraft.world.mca.model.MCAChunk;
+import net.minecraft.world.mca.model.MCARegion;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,12 +1,10 @@
 package net.minecraft.world.locator;
 
 import net.minecraft.world.manager.WorldManager;
+import net.minecraft.world.mca.model.MCABlock;
 import net.minecraft.world.mca.model.MCAChunk;
 import net.minecraft.world.mca.model.MCARegion;
 import net.minecraft.world.mca.model.MCASection;
-import net.minecraft.world.mca.model.MCABlock;
-
-import java.io.IOException;
 
 import static net.minecraft.world.mca.config.ChunkConfig.BLOCKS_SIDE;
 
@@ -17,7 +15,7 @@ public class BlockLocator {
         this.wm = wm;
     }
 
-    public MCABlock getBlock(int x, int y, int z) throws IOException {
+    public MCABlock getBlock(int x, int y, int z) {
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
         int regionX = chunkX >> 5;

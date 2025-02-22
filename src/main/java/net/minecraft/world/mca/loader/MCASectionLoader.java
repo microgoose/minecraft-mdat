@@ -1,9 +1,9 @@
 package net.minecraft.world.mca.loader;
 
+import net.minecraft.world.mca.model.MCASection;
 import net.minecraft.world.nbt.NBTNavigator;
 import net.minecraft.world.nbt.NBTReader;
 import net.minecraft.world.nbt.NBTSkipper;
-import net.minecraft.world.mca.model.MCASection;
 
 import java.nio.ByteBuffer;
 

@@ -5,6 +5,7 @@ import net.minecraft.world.mca.model.MCAChunk;
 import net.minecraft.world.mca.model.MCARegion;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -25,7 +26,7 @@ public class WorldManager {
         this.regionCache = regionCache;
     }
 
-    public MCARegion loadRegion(int regionX, int regionZ) throws IOException {
+    public MCARegion loadRegion(int regionX, int regionZ) {
         long regionKey = getRegionKey(regionX, regionZ);
         MCARegion region = regionCache.get(regionKey);
 
@@ -42,12 +43,14 @@ public class WorldManager {
 
             region = MCARegionLoader.loadRegion(regionBuffer, regionX, regionZ);
             regionCache.put(regionKey, region);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
 
         return region;
     }
 
-    public MCAChunk loadChunk(int chunkX, int chunkZ) throws IOException {
+    public MCAChunk loadChunk(int chunkX, int chunkZ) {
         int regionX = chunkX >> 5;
         int regionZ = chunkZ >> 5;
         int localChunkX = chunkX & 31;
